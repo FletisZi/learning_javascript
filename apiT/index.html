@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APiT</title>
+</head>
+<body>
+    <a id="auth" href="https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=jf3m5uz1o2zpd8qpf5xgjoshstmk0w&redirect_uri=http://localhost:8080/&scope=user:read:follows&force_verify=true">Connect with Twitch</a>
+    
+    <div id="container">
+
+    </div>
+    
+</body>
+
+    <script defer>
+
+        window.addEventListener('DOMContentLoaded',()=>{
+            const urlReturn = document.location.hash      
+            const urlReturncut = urlReturn.replace(/(#access_token=)/ig,'')
+            const acess_token = urlReturncut.slice(0,30)
+
+            console.log(acess_token)
+
+            myHeaders = new Headers({
+            Authorization: `Bearer ${acess_token}`,
+            'Client-Id': 'jf3m5uz1o2zpd8qpf5xgjoshstmk0w',
+            
+            
+            
+            });
+
+            var myInit = {
+            method: "GET",
+            headers: myHeaders,
+            mode: "cors",
+            cache: "default",
+            };
+            
+            
+            // fetch("https://api.twitch.tv/helix/channels/followed?user_id=217942971", myInit) 
+            // .then(function (response) {
+                
+            //     response.json().then(function (myBlob) {
+                
+            //     //window.open('https://www.twitch.tv/'+myBlob.data[0].broadcaster_name, '_blank');
+               
+                
+            //     });
+            // })
+            
+            async function getAllFollowed(){
+                const reponse = await fetch("https://api.twitch.tv/helix/channels/followed?user_id=217942971", myInit)
+                const data = await reponse.json();
+                return ( data)
+            }
+            
+            function createElm(text,link){
+                const container = document.querySelector('#container');
+                const atuor = document.querySelector('#auth');
+                
+                if(atuor){atuor.remove();}
+                
+                let Li = document.createElement('li')
+                let buttons = document.createElement('a')
+                buttons.href = `${link}`
+                buttons.textContent= `${text}`;
+                Li.appendChild(buttons)
+
+                container.appendChild(Li);
+
+            }
+
+            
+
+            const tReponse = getAllFollowed();
+
+            tReponse.then((data) => {
+                data.data.map((data,index)=>{
+                    if(index<20){
+                        createElm(data.broadcaster_login,`https://www.twitch.tv/${data.broadcaster_login}`)
+                    }
+
+                })
+            })
+
+        })
+        
+
+        
+
+        // const btnRedirect = document.querySelector('#redirect')
+        // btnRedirect.addEventListener('click',(e)=>{
+        //     e.preventDefault();
+
+
+            
+            
+
+
+        //     // myHeaders = new Headers({
+        //     // Authorization: 'Bearer vifl24po2ouk97cp7kzm3rxtx1p7vc',
+        //     // 'Client-Id': 'jf3m5uz1o2zpd8qpf5xgjoshstmk0w',                        
+        //     // });
+
+
+        //     // var myInit = {
+        //     // method: "GET",
+            
+        //     // headers: myHeaders,
+        //     // mode: "no-cors",
+        //     // responseType : "document",
+
+           
+        //     // };
+            
+            
+            
+           
+
+
+
+                
+
+
+
+
+
+        //     // fetch("https://id.twitch.tv/oauth2/token?response_type=token&scope=user:read:follows&client_id=jf3m5uz1o2zpd8qpf5xgjoshstmk0w&client_secret=2tnyp1zuglqvjkftc5a7mtfhx3ao2i&grant_type=client_credentials&force_verify=true", {
+        //     // method: "POST",
+        //     // headers: {
+                
+        //     // }
+        //     // })
+        //     // .then((response) => response.json())
+        //     // .then((json) => console.log(json));
+
+            
+            
+           
+
+        //     // myHeaders = new Headers({
+        //     // Authorization: 'Bearer vifl24po2ouk97cp7kzm3rxtx1p7vc',
+        //     // //'Client-Id': 'jf3m5uz1o2zpd8qpf5xgjoshstmk0w',
+            
+            
+            
+        //     // });
+
+        //     // var myInit = {
+        //     // method: "GET",
+        //     // headers: myHeaders,
+        //     // mode: "cors",
+        //     // cache: "default",
+        //     // };
+
+        //     // //https://www.twitch.tv/
+        //     // //fetch("https://api.twitch.tv/helix/users?login=japagameplay11", myInit)
+        //     // //fetch("https://api.twitch.tv/helix/users/follows?to_id=217942971", myInit)
+        //     // fetch("https://api.twitch.tv/helix/channels/followed?user_id=217942971", myInit)
+        //     // //fetch("https://id.twitch.tv/oauth2/validate", myInit)
+        //     // .then(function (response) {
+                
+        //     //     response.json().then(function (myBlob) {
+                
+        //     //     //window.open('https://www.twitch.tv/'+myBlob.data[0].broadcaster_name, '_blank');
+        //     //     console.log('')
+                
+        //     //     });
+        //     // })
+            
+
+
+
+        // })
+        
+    </script>
+</html>
