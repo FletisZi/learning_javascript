@@ -4,6 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>APiT</title>
+    <style>
+        img{
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+        li{
+            list-style-type: none;
+            padding: 10px 0;
+        }
+        a{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            font-family: Arial , 'sans-serif';
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
     <a id="auth" href="https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=jf3m5uz1o2zpd8qpf5xgjoshstmk0w&redirect_uri=http://localhost:8080/&scope=user:read:follows&force_verify=true">Connect with Twitch</a>
@@ -15,6 +34,7 @@
 </body>
 
     <script defer>
+
 
         window.addEventListener('DOMContentLoaded',()=>{
             const urlReturn = document.location.hash      
@@ -39,24 +59,29 @@
             };
             
             
-            // fetch("https://api.twitch.tv/helix/channels/followed?user_id=217942971", myInit) 
+            // fetch("https://api.twitch.tv/helix/users?login=poderosobagual", myInit) 
             // .then(function (response) {
                 
             //     response.json().then(function (myBlob) {
-                
+            //     console.log(myBlob)
             //     //window.open('https://www.twitch.tv/'+myBlob.data[0].broadcaster_name, '_blank');
                
                 
             //     });
             // })
             
+            async function getImgUsers(login){
+                const reponse = await fetch(`https://api.twitch.tv/helix/users?login=${login}`, myInit)
+                const data = await reponse.json();
+                return ( data)
+            }
             async function getAllFollowed(){
                 const reponse = await fetch("https://api.twitch.tv/helix/channels/followed?user_id=217942971", myInit)
                 const data = await reponse.json();
                 return ( data)
             }
             
-            function createElm(text,link){
+            function createElm(text,link,imgURL){
                 const container = document.querySelector('#container');
                 const atuor = document.querySelector('#auth');
                 
@@ -64,8 +89,15 @@
                 
                 let Li = document.createElement('li')
                 let buttons = document.createElement('a')
+                let imgProfile = document.createElement('img')
+                let description = document.createElement('span')
+                description.textContent+= `${text}`;
+                imgProfile.src = `${imgURL}`
+                buttons.appendChild(imgProfile)
+                buttons.appendChild(description)
                 buttons.href = `${link}`
-                buttons.textContent= `${text}`;
+                
+                
                 Li.appendChild(buttons)
 
                 container.appendChild(Li);
@@ -79,7 +111,14 @@
             tReponse.then((data) => {
                 data.data.map((data,index)=>{
                     if(index<20){
-                        createElm(data.broadcaster_login,`https://www.twitch.tv/${data.broadcaster_login}`)
+                        const prmisseImg = getImgUsers(data.broadcaster_login);
+
+                        prmisseImg.then((dataProfile)=>{
+                            
+                            createElm(data.broadcaster_login,`https://www.twitch.tv/${data.broadcaster_login}`,dataProfile.data[0].profile_image_url)
+                        })
+
+                        
                     }
 
                 })
